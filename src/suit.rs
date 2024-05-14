@@ -12,6 +12,12 @@ pub enum Suit {
     Clubs,
 }
 
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub enum Color {
+    Black,
+    Red,
+}
+
 impl Ord for Suit {
     fn cmp(&self, other: &Suit) -> Ordering {
         let o1 = self.ordinal();
@@ -90,6 +96,13 @@ impl Suit {
             Hearts => "Hearts",
             Diamonds => "Diamonds",
             Clubs => "Clubs",
+        }
+    }
+
+    pub fn to_color(self) -> Color {
+        match self {
+            Self::Spades | Self::Clubs => Color::Black,
+            Self::Hearts | Self::Diamonds => Color::Red,
         }
     }
 
