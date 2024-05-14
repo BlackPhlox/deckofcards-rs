@@ -136,4 +136,16 @@ impl Hand {
     pub fn cards_of_suit(&self, suit: Suit) -> Vec<Card> {
         cards_of_suit(&self.cards, suit)
     }
+
+    pub fn sort_by_suit(&self) -> Hand {
+        let mut cards = self.cards.clone();
+        cards.sort_by(|a, b| a.suit.partial_cmp(&b.suit).unwrap());
+        Hand::from_cards(&cards)
+    }
+
+    pub fn sort_by_rank(&self) -> Hand {
+        let mut cards = self.cards.clone();
+        cards.sort();
+        Hand::from_cards(&cards)
+    }
 }
