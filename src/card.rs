@@ -114,6 +114,18 @@ impl Card {
         format!("{}{}", self.rank.to_char(), self.suit.to_char())
     }
 
+    #[cfg(feature = "pretty")]
+    pub fn to_pretty(&self) -> String {
+        use colored::Colorize;
+
+        format!("{}{}", self.rank.to_char(), 
+            match self.suit.to_color() {
+                suit::Color::Black => self.suit.to_unicode().to_string().as_str().black(),
+                suit::Color::Red => self.suit.to_unicode().to_string().as_str().red(),
+            }
+        )
+    }
+
     /// Returns an English formatted name of the card, e.g. "Ace of Spades"
     pub fn name(&self) -> String {
         format!("{} of {}", self.rank.to_str(), self.suit.to_str())
