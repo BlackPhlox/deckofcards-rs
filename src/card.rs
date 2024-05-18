@@ -25,7 +25,11 @@ pub struct Card {
 
 impl fmt::Display for Card {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.to_str())
+        if cfg!(feature = "pretty") {
+            write!(f, "{}",self.to_pretty())
+        } else {
+            write!(f, "{}",self.to_str())
+        }
     }
 }
 
