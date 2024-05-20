@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::{
     suit::{self, Color},
     DisplayCard,
@@ -6,6 +8,16 @@ use crate::{
 #[derive(Copy, Clone, Debug, PartialEq, Default)]
 pub struct Joker {
     pub color: Color,
+}
+
+impl fmt::Display for Joker {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        #[cfg(feature = "pretty")]
+        let str = self.to_pretty();
+        #[cfg(not(feature = "pretty"))]
+        let str = self.to_str();
+        write!(f, "{}", str)
+    }
 }
 
 impl DisplayCard for Joker {

@@ -22,10 +22,7 @@ impl Display for Hand {
     fn fmt(&self, f: &mut Formatter) -> Result {
         let mut result = String::with_capacity(self.cards.len() * 3);
         self.cards.iter().enumerate().for_each(|(i, card)| {
-            #[cfg(feature = "pretty")]
-            result.push_str(&card.to_pretty());
-            #[cfg(not(feature = "pretty"))]
-            result.push_str(&card.to_str());
+            result.push_str(&format!("{}", card));
             if i < self.cards.len() - 1 {
                 result.push(',');
             }

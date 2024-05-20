@@ -1,3 +1,5 @@
+use std::fmt;
+
 use deckofcards::{Area, Card, Deck, Decky, DisplayCard, Joker};
 use deref_derive::{Deref, DerefMut};
 use handy_derive::Handy;
@@ -6,6 +8,15 @@ use handy_derive::Handy;
 pub enum CardWithJoker {
     Card(Card),
     Joker(Joker),
+}
+
+impl fmt::Display for CardWithJoker {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            CardWithJoker::Card(c) => write!(f, "{}", c),
+            CardWithJoker::Joker(j) => write!(f, "{}", j),
+        }
+    }
 }
 
 impl DisplayCard for CardWithJoker {
@@ -31,6 +42,7 @@ impl DisplayCard for CardWithJoker {
         Err("Invalid string")
     }
 
+    #[cfg(feature = "pretty")]
     fn to_pretty(&self) -> String {
         match self {
             CardWithJoker::Card(c) => c.to_pretty(),
@@ -120,7 +132,7 @@ fn main() {
     // Deal a card
     for _ in 0..10 {
         if let Ok(card) = deck.deal_one() {
-            println!("You dealt a {}", card.to_pretty());
+            println!("You dealt a {}", card);
         } else {
             panic!("We should have enough cards for this not to happen")
         }

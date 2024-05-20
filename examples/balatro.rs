@@ -142,6 +142,7 @@ impl DisplayCard for BalatroCard {
         }));
     }
 
+    #[cfg(feature = "pretty")]
     fn to_pretty(&self) -> String {
         match self {
             BalatroCard::Card(_) => todo!(),

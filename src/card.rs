@@ -1,7 +1,7 @@
 extern crate rand;
 
 use std::cmp::Ordering;
-use std::fmt;
+use std::fmt::{self};
 use std::slice::Iter;
 
 use super::*;
@@ -25,11 +25,11 @@ pub struct Card {
 
 impl fmt::Display for Card {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if cfg!(feature = "pretty") {
-            write!(f, "{}", self.to_pretty())
-        } else {
-            write!(f, "{}", self.to_str())
-        }
+        #[cfg(feature = "pretty")]
+        let str = self.to_pretty();
+        #[cfg(not(feature = "pretty"))]
+        let str = self.to_str();
+        write!(f, "{}", str)
     }
 }
 
@@ -45,6 +45,7 @@ pub trait DisplayCard {
     fn from_str(s: &str) -> Result<Self, &'static str>
     where
         Self: Sized;
+    #[cfg(feature = "pretty")]
     fn to_pretty(&self) -> String;
     fn name(&self) -> String;
 }
