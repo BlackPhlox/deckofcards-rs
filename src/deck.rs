@@ -18,75 +18,51 @@ use super::*;
 /// A deck cannot have more cards added or removed to it once it is created.
 ///
 #[derive(Clone)]
-pub struct Deck {
+pub struct Deck<C> {
     /// A deck contains zero or more cards
-    cards: Vec<Card>,
+    pub cards: Vec<C>,
     /// Dealt cards are cards which have been dealt in calls but are still members of the deck
     /// they remain dealt until the deck is reshuffled or reset.
-    dealt_cards: Vec<Card>,
+    pub dealt_cards: Vec<C>,
 }
 
-impl Cards<Card> for Deck {
-    fn cards(&self) -> &[Card] {
+impl<C> Cards<C> for Deck<C> {
+    fn cards(&self) -> &[C] {
         self.cards.as_slice()
     }
 
-    fn mut_cards(&mut self) -> &mut [Card] {
+    fn mut_cards(&mut self) -> &mut [C] {
         self.cards.as_mut_slice()
     }
 }
 
-impl PlayingCards for Deck {}
+impl SortCards for Deck<Card> {}
 
-impl Deck {
-    /// Creates a new `Deck` containing the standard set of 52 cards
-    pub fn new() -> Deck {
+impl Decky<Card> for Deck<Card> {
+    fn new() -> Deck<Card> {
         Deck::from_cards(Card::all_cards())
     }
 
-    /// Creates a new `Deck` containing the specified cards
-    pub fn from_cards(cards: &[Card]) -> Deck {
+    fn push(&mut self, cards: &[Card]) {
+        self.cards.extend(cards.to_vec());
+    }
+
+    fn from_cards(cards: &[Card]) -> Deck<Card> {
         Deck {
             cards: cards.to_vec(),
             dealt_cards: Vec::with_capacity(cards.len()),
         }
     }
 
-    /// Returns the number of remaining undealt cards in the `Deck`
-    pub fn undealt_count(&self) -> usize {
-        self.cards.len()
-    }
-
-    /// Returns the number of dealt cards in the `Deck`
-    pub fn dealt_count(&self) -> usize {
+    fn dealt_count(&self) -> usize {
         self.dealt_cards.len()
     }
 
-    /// Returns the number of cards, dealt or undealt, within the `Deck`
-    pub fn count(&self) -> usize {
-        self.undealt_count() + self.dealt_count()
-    }
-
-    /// Returns the collection of dealt cards
-    pub fn dealt_cards(&self) -> &[Card] {
+    fn dealt_cards(&self) -> &[Card] {
         self.dealt_cards.as_slice()
     }
 
-    /// Tells you the top card (very next to be drawn) in the undealt deck
-    /// without dealing it.
-    pub fn top_card(&self) -> Option<Card> {
-        self.cards().last().map(|card| *card)
-    }
-
-    /// Tells you the bottom card (very last to be drawn) in the undealt deck
-    /// without dealing it.
-    pub fn bottom_card(&self) -> Option<Card> {
-        self.cards().first().map(|card| *card)
-    }
-
-    /// Deals the card from the undealt pile. If there are no cards left, the function
-    /// will return an error.
-    pub fn deal_one(&mut self) -> Result<Card, &'static str> {
+    fn deal_one(&mut self) -> Result<Card, &'static str> {
         if let Some(card) = self.cards.pop() {
             self.dealt_cards.push(card);
             Ok(card)
@@ -95,46 +71,9 @@ impl Deck {
         }
     }
 
-    /// Deals one or more card from the undealt pile and returns them as an array.
-    pub fn deal(&mut self, numcards: usize) -> Vec<Card> {
-        let mut result: Vec<Card> = Vec::with_capacity(numcards as usize);
-        for _ in 0..numcards {
-            if let Ok(card) = self.deal_one() {
-                result.push(card);
-            } else {
-                // No cards so no point continuing
-                break;
-            }
-        }
-        result
-    }
-
-    /// Deals one or more card straight to the `Hand`. Returns the number of cards dealt.
-    pub fn deal_to_hand(&mut self, hand: &mut Hand, numcards: usize) -> usize {
-        let mut dealt: usize = 0;
-        for _ in 0..numcards {
-            if let Ok(card) = self.deal_one() {
-                dealt += 1;
-                hand.push_card(card);
-            } else {
-                // No cards so no point continuing
-                break;
-            }
-        }
-        dealt
-    }
-
-    /// Return the dealt cards back to the end of the undealt pile. Order is preserved according
-    /// to the default order or the last shuffle.
-    pub fn reset(&mut self) {
+    fn reset(&mut self) {
         // Put cards back into undealt deck in reverse order
         self.cards.extend(self.dealt_cards.iter().rev());
         self.dealt_cards.clear();
-    }
-
-    /// Resets and shuffles the deck
-    pub fn reset_shuffle(&mut self) {
-        self.reset();
-        self.shuffle();
     }
 }

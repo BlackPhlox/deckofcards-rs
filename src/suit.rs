@@ -12,8 +12,9 @@ pub enum Suit {
     Clubs,
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Default)]
 pub enum Color {
+    #[default]
     Black,
     Red,
 }

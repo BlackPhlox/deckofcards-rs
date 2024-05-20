@@ -86,6 +86,15 @@ macro_rules! deck {
     };
 }
 
+#[cfg(feature = "pretty")]
+use colored::CustomColor;
+#[cfg(feature = "pretty")]
+const GRAY: CustomColor = CustomColor {
+    r: 100,
+    g: 100,
+    b: 100,
+};
+
 mod suit;
 pub use suit::{Color, Suit};
 
@@ -96,13 +105,16 @@ mod joker;
 pub use joker::Joker;
 
 mod card;
-pub use card::{Card, Cardy};
+pub use card::{Card, DisplayCard};
 
 mod cards;
-pub use cards::{cards_of_rank, cards_of_suit, Cards, PlayingCards};
+pub use cards::{cards_of_rank, cards_of_suit, Cards, SortCards};
 
 mod deck;
 pub use deck::Deck;
+
+mod decky;
+pub use decky::Decky;
 
 mod hand;
 pub use hand::{Area, Hand};

@@ -40,7 +40,7 @@ impl Ord for Card {
     }
 }
 
-pub trait Cardy {
+pub trait DisplayCard {
     fn to_str(&self) -> String;
     fn from_str(s: &str) -> Result<Self, &'static str>
     where
@@ -49,7 +49,7 @@ pub trait Cardy {
     fn name(&self) -> String;
 }
 
-impl Cardy for Card {
+impl DisplayCard for Card {
     /// Turns the card into a short string consisting of rank, suit, e.g. "AS"
     fn to_str(&self) -> String {
         format!("{}{}", self.rank.to_char(), self.suit.to_char())
@@ -90,7 +90,12 @@ impl Cardy for Card {
             "{}{}",
             self.rank.to_char(),
             match self.suit.to_color() {
-                suit::Color::Black => self.suit.to_unicode().to_string().as_str().black(),
+                suit::Color::Black => self
+                    .suit
+                    .to_unicode()
+                    .to_string()
+                    .as_str()
+                    .custom_color(GRAY),
                 suit::Color::Red => self.suit.to_unicode().to_string().as_str().red(),
             }
         )
@@ -106,6 +111,12 @@ impl Card {
     /// Creates a card with the given suit and rank
     pub fn new(rank: Rank, suit: Suit) -> Card {
         Card { rank, suit }
+    }
+
+    /// Compares by rank only
+    pub fn cmp_rank(&self, other: &Card) -> Ordering {
+        let result: Ordering = self.rank.cmp(&other.rank);
+        result
     }
 
     /// Compares by rank and then suit

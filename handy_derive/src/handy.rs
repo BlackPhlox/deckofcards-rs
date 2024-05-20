@@ -2,14 +2,14 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{self, parse::{Parse, ParseStream}, Error, MetaList};
 
-struct MyParams(syn::Ident);
+struct HandyParams(syn::Ident);
 
-impl Parse for MyParams {
+impl Parse for HandyParams {
     fn parse(input: ParseStream) -> Result<Self, Error> {
         //let content;
         //syn::parenthesized!(content in input);
         let card_type = input.parse()?;
-        Ok(MyParams(card_type))
+        Ok(HandyParams(card_type))
     }
 }
 
@@ -31,7 +31,7 @@ fn impl_handy_macro(ast: &syn::DeriveInput) -> TokenStream {
         syn::Meta::List(MetaList { path: _, delimiter: _, tokens: ts }) => ts,
         _ => panic!("Invalid attribute"),
     }; 
-    let parameters: MyParams = syn::parse2(tokens).expect("Invalid handy_cards attribute!");
+    let parameters: HandyParams = syn::parse2(tokens).expect("Invalid handy_cards attribute!");
     let card_type = parameters.0;
 
     let gen = quote! {
@@ -58,10 +58,6 @@ fn impl_handy_macro(ast: &syn::DeriveInput) -> TokenStream {
                 Self::default()
             }
         
-            fn from_hand(hand: &Self) -> Self {
-                Self::from_cards(hand.cards())
-            }
-        
             fn from_cards(cards: &[#card_type]) -> Self {
                 Self {
                     0: Area {
@@ -86,10 +82,6 @@ fn impl_handy_macro(ast: &syn::DeriveInput) -> TokenStream {
             fn push_hand(&mut self, other: &Self) {
                 //self.0.cards.extend(other.cards());
                 todo!()
-            }
-        
-            fn len(&self) -> usize {
-                self.0.cards.len()
             }
         
             fn clear(&mut self) {

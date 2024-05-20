@@ -64,17 +64,12 @@ impl Cards<Card> for Hand {
     }
 }
 
-impl PlayingCards for Hand {}
+impl SortCards for Hand {}
 
 impl Handy<Card> for Hand {
     /// Create an empty hand
     fn new() -> Self {
         Self::default()
-    }
-
-    /// Makes a `Hand` from an existing hand
-    fn from_hand(hand: &Self) -> Self {
-        Self::from_cards(hand.cards())
     }
 
     /// Makes a `Hand` from a slice
@@ -107,11 +102,6 @@ impl Handy<Card> for Hand {
     /// Adds zero or more cards from some other `Hand`
     fn push_hand(&mut self, other: &Self) {
         self.cards.extend(other.cards());
-    }
-
-    /// Returns the number of cards
-    fn len(&self) -> usize {
-        self.cards.len()
     }
 
     /// Clears the `Hand` (makes it empty)
@@ -158,17 +148,5 @@ impl Hand {
     /// Returns cards of the specified `Suit`
     pub fn cards_of_suit(&self, suit: Suit) -> Vec<Card> {
         cards_of_suit(&self.cards, suit)
-    }
-
-    pub fn sort_by_suit(&self) -> Hand {
-        let mut cards = self.cards.clone();
-        cards.sort_by(|a, b| a.suit.partial_cmp(&b.suit).unwrap());
-        Hand::from_cards(&cards)
-    }
-
-    pub fn sort_by_rank(&self) -> Hand {
-        let mut cards = self.cards.clone();
-        cards.sort();
-        Hand::from_cards(&cards)
     }
 }

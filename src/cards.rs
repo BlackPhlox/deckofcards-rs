@@ -56,6 +56,12 @@ fn sort_descending_rank_suit(cards: &mut [Card]) {
     cards.sort_by(|a, b| a.cmp_desc_rank_then_suit(b));
 }
 
+/// Sorts the slice by rank(low to high) and then suit
+fn sort_ascending_rank_suit(cards: &mut [Card]) {
+    // Reverse sort (since default is low to high)
+    cards.sort_by(|a, b| a.cmp_desc_rank_then_suit(b));
+}
+
 /// Returns cards of the specified rank
 pub fn cards_of_rank(cards: &[Card], rank: Rank) -> Vec<Card> {
     cards.iter().filter(|c| c.rank == rank).cloned().collect()
@@ -99,7 +105,7 @@ pub trait Cards<C> {
 }
 
 /// Certain actions are common to a deck and a hand of cards
-pub trait PlayingCards: Cards<Card> {
+pub trait SortCards: Cards<Card> {
     /// Sort the cards by suit and then by rank (low to high)
     fn sort_suit_ascending_rank(&mut self) {
         sort_suit_ascending_rank(self.mut_cards());
@@ -113,5 +119,11 @@ pub trait PlayingCards: Cards<Card> {
     /// Sort the cards by rank (high to low) and then by suit
     fn sort_descending_rank_suit(&mut self) {
         sort_descending_rank_suit(self.mut_cards());
+    }
+
+    /// Sort the cards by rank (high to low) and then by suit and then reverses the result so the order is low to high
+    fn sort_ascending_rank_suit(&mut self) {
+        sort_ascending_rank_suit(self.mut_cards());
+        self.mut_cards().reverse()
     }
 }

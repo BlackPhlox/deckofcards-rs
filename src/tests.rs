@@ -303,7 +303,7 @@ fn deck_shuffle_new_order() {
 
 #[test]
 fn deck_clone() {
-    let mut d: Deck = deck!();
+    let mut d: Deck<Card> = deck!();
     d.deal(3);
     let d2 = d.clone();
     assert_eq!(d.cards().len(), d2.cards().len());

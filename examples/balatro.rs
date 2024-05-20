@@ -1,9 +1,11 @@
-use deckofcards::{card, hand, Area, Card, Cards, Cardy, Color, Deck, Hand, Handy, PlayingCards};
+use deckofcards::{
+    card, hand, Area, Card, Cards, Color, Deck, Decky, DisplayCard, Hand, Handy, SortCards,
+};
 use deref_derive::{Deref, DerefMut};
 use handy_derive::Handy;
 
 #[derive(Clone, Debug, PartialEq)]
-enum CardType {
+pub enum BalatroCard {
     Card(Card),
     Joker(Joker),
     Tarot(Tarot),
@@ -116,19 +118,19 @@ pub struct Voucher {
     pub vtype: VoucherType,
 }
 
-impl Cardy for CardType {
+impl DisplayCard for BalatroCard {
     fn to_str(&self) -> String {
         match self {
-            CardType::Card(_) => todo!(),
-            CardType::Joker(j) => j.item.shorthand.to_owned(),
-            CardType::Tarot(_) => todo!(),
-            CardType::Planet(_) => todo!(),
-            CardType::Voucher(_) => todo!(),
+            BalatroCard::Card(_) => todo!(),
+            BalatroCard::Joker(j) => j.item.shorthand.to_owned(),
+            BalatroCard::Tarot(_) => todo!(),
+            BalatroCard::Planet(_) => todo!(),
+            BalatroCard::Voucher(_) => todo!(),
         }
     }
 
-    fn from_str(s: &str) -> std::prelude::v1::Result<CardType, &'static str> {
-        return Ok(CardType::Joker(Joker {
+    fn from_str(s: &str) -> std::prelude::v1::Result<BalatroCard, &'static str> {
+        return Ok(BalatroCard::Joker(Joker {
             item: Item {
                 name: "Green Joker".to_string(),
                 shorthand: "GJ".to_string(),
@@ -142,53 +144,54 @@ impl Cardy for CardType {
 
     fn to_pretty(&self) -> String {
         match self {
-            CardType::Card(_) => todo!(),
-            CardType::Joker(j) => j.item.shorthand.to_owned(),
-            CardType::Tarot(_) => todo!(),
-            CardType::Planet(_) => todo!(),
-            CardType::Voucher(_) => todo!(),
+            BalatroCard::Card(_) => todo!(),
+            BalatroCard::Joker(j) => j.item.shorthand.to_owned(),
+            BalatroCard::Tarot(_) => todo!(),
+            BalatroCard::Planet(_) => todo!(),
+            BalatroCard::Voucher(_) => todo!(),
         }
     }
 
     fn name(&self) -> String {
         match self {
-            CardType::Card(_) => todo!(),
-            CardType::Joker(j) => j.item.name.to_owned(),
-            CardType::Tarot(_) => todo!(),
-            CardType::Planet(_) => todo!(),
-            CardType::Voucher(_) => todo!(),
+            BalatroCard::Card(_) => todo!(),
+            BalatroCard::Joker(j) => j.item.name.to_owned(),
+            BalatroCard::Tarot(_) => todo!(),
+            BalatroCard::Planet(_) => todo!(),
+            BalatroCard::Voucher(_) => todo!(),
         }
     }
 }
 
-pub struct Base(Area<CardType>);
+#[derive(Clone, Deref, DerefMut)]
+pub struct BlatroArea(Area<BalatroCard>);
 
-impl Default for Base {
+impl Default for BlatroArea {
     fn default() -> Self {
         Self(Area { cards: vec![] })
     }
 }
 
-impl Cards<CardType> for Base {
-    fn cards(&self) -> &[CardType] {
+impl Cards<BalatroCard> for BlatroArea {
+    fn cards(&self) -> &[BalatroCard] {
         self.0.cards.as_slice()
     }
 
-    fn mut_cards(&mut self) -> &mut [CardType] {
+    fn mut_cards(&mut self) -> &mut [BalatroCard] {
         self.0.cards.as_mut_slice()
     }
 }
 
-impl Handy<CardType> for Base {
+impl Handy<BalatroCard> for BlatroArea {
     fn new() -> Self {
-        Self::default()
+        Self(Area { cards: vec![] })
     }
 
     fn from_hand(hand: &Self) -> Self {
         Self::from_cards(hand.cards())
     }
 
-    fn from_cards(cards: &[CardType]) -> Self {
+    fn from_cards(cards: &[BalatroCard]) -> Self {
         Self {
             0: Area {
                 cards: Vec::from(cards),
@@ -197,36 +200,19 @@ impl Handy<CardType> for Base {
     }
 
     fn from_strings(card_slice: &[&str]) -> Self {
-        let cards = card_slice
-            .iter()
-            .map(|s| {
-                CardType::Joker(Joker {
-                    item: Item {
-                        name: "".to_string(),
-                        shorthand: "".to_string(),
-                        base_buy_value: 3,
-                        base_sell_value: 2,
-                    },
-                    jtype: JokerType::GreenJoker(0),
-                    edition: Default::default(),
-                })
-            })
-            .collect::<Vec<CardType>>();
-        Self { 0: Area { cards } }
+        todo!()
     }
 
-    fn push_card(&mut self, card: CardType) {
+    fn push_card(&mut self, card: BalatroCard) {
         self.0.cards.push(card);
     }
 
-    fn push_cards(&mut self, cards: &[CardType]) {
-        //self.0.cards.extend(cards);
-        todo!()
+    fn push_cards(&mut self, cards: &[BalatroCard]) {
+        self.0.cards.extend_from_slice(cards);
     }
 
     fn push_hand(&mut self, other: &Self) {
-        //self.0.cards.extend(other.cards());
-        todo!()
+        self.0.cards.extend_from_slice(other.cards());
     }
 
     fn len(&self) -> usize {
@@ -237,23 +223,23 @@ impl Handy<CardType> for Base {
         self.0.cards.clear();
     }
 
-    fn remove(&mut self, index: usize) -> CardType {
+    fn remove(&mut self, index: usize) -> BalatroCard {
         self.0.cards.remove(index)
     }
 
-    fn remove_cards(&mut self, cards: &[CardType]) {
+    fn remove_cards(&mut self, cards: &[BalatroCard]) {
         for c in cards {
             let _ = self.remove_card(c);
         }
     }
 
-    fn remove_all_cards(&mut self, cards: &[CardType]) {
+    fn remove_all_cards(&mut self, cards: &[BalatroCard]) {
         for c in cards {
             while self.remove_card(c) {}
         }
     }
 
-    fn remove_card(&mut self, card: &CardType) -> bool {
+    fn remove_card(&mut self, card: &BalatroCard) -> bool {
         if let Some(pos) = self.0.cards.iter().position(|c| c == card) {
             let _ = self.0.cards.remove(pos);
             true
@@ -263,17 +249,69 @@ impl Handy<CardType> for Base {
     }
 }
 
+impl Decky<BalatroCard> for Deck<BalatroCard> {
+    fn new() -> Deck<BalatroCard> {
+        let cards = Card::all_cards()
+            .iter()
+            .map(|c| BalatroCard::Card(*c))
+            .collect::<Vec<BalatroCard>>();
+        Deck::from_cards(&cards)
+    }
+
+    fn push(&mut self, cards: &[BalatroCard]) {
+        self.cards.extend_from_slice(cards);
+    }
+
+    fn from_cards(cards: &[BalatroCard]) -> Deck<BalatroCard> {
+        Deck {
+            cards: cards.to_vec(),
+            dealt_cards: Vec::with_capacity(cards.len()),
+        }
+    }
+
+    fn dealt_count(&self) -> usize {
+        self.dealt_cards.len()
+    }
+
+    fn dealt_cards(&self) -> &[BalatroCard] {
+        self.dealt_cards.as_slice()
+    }
+
+    fn deal_one(&mut self) -> Result<BalatroCard, &'static str> {
+        if let Some(card) = self.cards.pop() {
+            self.dealt_cards.push(card.clone());
+            Ok(card)
+        } else {
+            Err("No cards left")
+        }
+    }
+
+    fn reset(&mut self) {
+        let cards = self
+            .dealt_cards
+            .iter()
+            .rev()
+            .map(|dc| dc.clone())
+            .collect::<Vec<BalatroCard>>();
+        self.cards.extend(cards);
+        self.dealt_cards.clear();
+    }
+}
+
 fn main() {
-    let mut deck = Deck::new();
+    let mut card_deck = Deck::<BalatroCard>::new();
 
-    let mut joker_slots = Base::new();
-    let mut consumeable_slots = Base::new();
-    let mut hand = Base::new();
-    let mut playing_hand = Base::new();
+    let mut joker_deck = Deck::<BalatroCard>::empty();
+    let mut voucher_deck = Deck::<BalatroCard>::empty();
 
-    let mut reroll_shop = Base::new();
-    let mut pack_shop = Base::new();
+    let mut joker_slots = BlatroArea::new();
+    let mut consumeable_slots = BlatroArea::new();
+    let mut hand = BlatroArea::new();
+    let mut playing_hand = BlatroArea::new();
+
+    let mut reroll_shop = BlatroArea::new();
+    let mut pack_shop = BlatroArea::new();
 
     // Put dealt cards back onto the deck
-    deck.reset();
+    card_deck.reset();
 }
