@@ -1,5 +1,8 @@
+use deref_derive::{Deref, DerefMut};
 use std::fmt::{Display, Formatter, Result};
 use std::ops::AddAssign;
+
+use self::cards::Cards;
 
 use super::*;
 
@@ -7,9 +10,12 @@ use super::*;
 /// e.g. the cards a person is holding. A hand may be shuffled or sorted
 /// and there are functions for adding or removing cards. Unlike a `Deck`,
 /// there is no concept of dealt or undealt cards.
-#[derive(Clone)]
-pub struct Hand {
-    pub cards: Vec<Card>,
+#[derive(Clone, Deref, DerefMut)]
+pub struct Hand(Area<Card>);
+
+#[derive(Clone, Default)]
+pub struct Area<T> {
+    pub cards: Vec<T>,
 }
 
 impl Display for Hand {
@@ -30,7 +36,9 @@ impl Display for Hand {
 
 impl Default for Hand {
     fn default() -> Self {
-        Self { cards: Vec::new() }
+        Self {
+            0: hand::Area { cards: Vec::new() },
+        }
     }
 }
 
@@ -46,7 +54,7 @@ impl AddAssign<Card> for Hand {
     }
 }
 
-impl Cards for Hand {
+impl Cards<Card> for Hand {
     fn cards(&self) -> &[Card] {
         self.cards.as_slice()
     }
@@ -56,72 +64,82 @@ impl Cards for Hand {
     }
 }
 
-impl Hand {
+impl PlayingCards for Hand {}
+
+impl Handy<Card> for Hand {
     /// Create an empty hand
-    pub fn new() -> Self { Self::default() }
+    fn new() -> Self {
+        Self::default()
+    }
 
     /// Makes a `Hand` from an existing hand
-    pub fn from_hand(hand: &Hand) -> Hand {
-        Hand::from_cards(hand.cards())
+    fn from_hand(hand: &Self) -> Self {
+        Self::from_cards(hand.cards())
     }
 
     /// Makes a `Hand` from a slice
-    pub fn from_cards(cards: &[Card]) -> Hand {
-        Hand { cards: Vec::from(cards) }
+    fn from_cards(cards: &[Card]) -> Self {
+        Self {
+            0: hand::Area {
+                cards: Vec::from(cards),
+            },
+        }
     }
 
     /// Constructs a `Hand` from a slice of strings with abbreviated card rank / suit values
-    pub fn from_strings(card_slice: &[&str]) -> Hand {
+    fn from_strings(card_slice: &[&str]) -> Self {
         let cards = card_slice.iter().map(|s| card!(s)).collect::<Vec<Card>>();
-        Hand { cards }
+        Self {
+            0: hand::Area { cards },
+        }
     }
 
     /// Adds one `Card` to the `Hand`
-    pub fn push_card(&mut self, card: Card) {
+    fn push_card(&mut self, card: Card) {
         self.cards.push(card);
     }
 
     /// Adds zero or more cards to the `Hand`
-    pub fn push_cards(&mut self, cards: &[Card]) {
+    fn push_cards(&mut self, cards: &[Card]) {
         self.cards.extend(cards);
     }
 
     /// Adds zero or more cards from some other `Hand`
-    pub fn push_hand(&mut self, other: &Hand) {
+    fn push_hand(&mut self, other: &Self) {
         self.cards.extend(other.cards());
     }
 
     /// Returns the number of cards
-    pub fn len(&self) -> usize {
+    fn len(&self) -> usize {
         self.cards.len()
     }
 
     /// Clears the `Hand` (makes it empty)
-    pub fn clear(&mut self) {
-    	self.cards.clear();
+    fn clear(&mut self) {
+        self.cards.clear();
     }
 
     /// Removes a `Card` from the `Hand` and returns it, panics if index does not exist
-    pub fn remove(&mut self, index: usize) -> Card {
+    fn remove(&mut self, index: usize) -> Card {
         self.cards.remove(index)
     }
 
     /// Removes the first instance of every matching card from the `Hand`
-    pub fn remove_cards(&mut self, cards: &[Card]) {
+    fn remove_cards(&mut self, cards: &[Card]) {
         for c in cards {
             let _ = self.remove_card(c);
         }
     }
 
     /// Removes the every instance of every matching card from the `Hand`
-    pub fn remove_all_cards(&mut self, cards: &[Card]) {
+    fn remove_all_cards(&mut self, cards: &[Card]) {
         for c in cards {
             while self.remove_card(c) {}
         }
     }
 
     /// Removes first instance of the matching card from the `Hand`
-    pub fn remove_card(&mut self, card: &Card) -> bool {
+    fn remove_card(&mut self, card: &Card) -> bool {
         if let Some(pos) = self.cards.iter().position(|c| c == card) {
             let _ = self.cards.remove(pos);
             true
@@ -129,7 +147,9 @@ impl Hand {
             false
         }
     }
+}
 
+impl Hand {
     /// Returns cards of the specified `Rank`
     pub fn cards_of_rank(&self, rank: Rank) -> Vec<Card> {
         cards_of_rank(&self.cards, rank)

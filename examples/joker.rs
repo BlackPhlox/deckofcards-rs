@@ -1,7 +1,26 @@
-use deckofcards::{Cards, Cardy, Deck};
+use std::fmt;
+
+use deckofcards::{Area, Cardy, Deck, PlayingCards};
+use deref_derive::{Deref, DerefMut};
+use handy_derive::Handy;
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub enum TriCard {
+    #[default]
+    A,
+    B,
+    C,
+}
+
+#[derive(Handy, Clone, Deref, DerefMut)]
+#[handy_cards(TriCard)]
+pub struct Base(Area<TriCard>);
 
 fn main() {
     let mut deck = Deck::new();
+
+    let b = Base::new();
+    //println!("{:?}", b);
 
     // Shuffle the deck
     deck.shuffle();

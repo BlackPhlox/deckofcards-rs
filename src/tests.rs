@@ -140,14 +140,22 @@ fn card_equality() {
 
 #[test]
 fn card_from_str() {
-    assert_eq!(Card::from_str("TC").unwrap(),
-               Card::new(Rank::Ten, Suit::Clubs));
-    assert_eq!(Card::from_str("CT").unwrap(),
-               Card::new(Rank::Ten, Suit::Clubs));
-    assert_eq!(Card::from_str("AD").unwrap(),
-               Card::new(Rank::Ace, Suit::Diamonds));
-    assert_eq!(Card::from_str("1S").unwrap(),
-               Card::new(Rank::Ace, Suit::Spades));
+    assert_eq!(
+        Card::from_str("TC").unwrap(),
+        Card::new(Rank::Ten, Suit::Clubs)
+    );
+    assert_eq!(
+        Card::from_str("CT").unwrap(),
+        Card::new(Rank::Ten, Suit::Clubs)
+    );
+    assert_eq!(
+        Card::from_str("AD").unwrap(),
+        Card::new(Rank::Ace, Suit::Diamonds)
+    );
+    assert_eq!(
+        Card::from_str("1S").unwrap(),
+        Card::new(Rank::Ace, Suit::Spades)
+    );
     assert!(Card::from_str("ADC").is_err());
     assert!(Card::from_str("A").is_err());
     assert!(Card::from_str("C").is_err());

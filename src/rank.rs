@@ -34,7 +34,6 @@ impl Ord for Rank {
     }
 }
 
-
 impl Rank {
     /// Returns an iterator through the standard ranks
     pub fn iterator() -> Iter<'static, Rank> {
@@ -95,7 +94,7 @@ impl Rank {
             'Q' => Queen,
             'K' => King,
             'A' | '1' => Ace,
-            _ => return Err("Invalid rank")
+            _ => return Err("Invalid rank"),
         };
         Ok(rank)
     }
@@ -141,7 +140,7 @@ impl Rank {
     /// Gets the standard card ranks
     pub fn ranks() -> &'static [Rank] {
         static RANKS: [Rank; 13] = [
-            Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace
+            Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace,
         ];
         &RANKS[..]
     }

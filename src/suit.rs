@@ -54,7 +54,7 @@ impl Suit {
             'H' => Ok(Hearts),
             'D' => Ok(Diamonds),
             'C' => Ok(Clubs),
-            _ => Err("Invalid suit")
+            _ => Err("Invalid suit"),
         }
     }
 
@@ -75,7 +75,7 @@ impl Suit {
             '♥' => Ok(Hearts),
             '♦' => Ok(Diamonds),
             '♣' => Ok(Clubs),
-            _ => Err("Invalid suit")
+            _ => Err("Invalid suit"),
         }
     }
 

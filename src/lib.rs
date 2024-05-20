@@ -13,14 +13,12 @@
 /// ```
 #[macro_export]
 macro_rules! card {
-    ($s:expr) => {
-        {
-            let cr = $crate::Card::from_str($s);
-            cr.unwrap_or_else(|_| {
-                panic!("Not a known card {}", $s);
-            })
-        }
-    };
+    ($s:expr) => {{
+        let cr = $crate::Card::from_str($s);
+        cr.unwrap_or_else(|_| {
+            panic!("Not a known card {}", $s);
+        })
+    }};
 }
 
 /// Creates a `Hand` of cards from the list of abbreviated cards string specified by rank / suit,
@@ -85,26 +83,32 @@ macro_rules! combine_hands {
 macro_rules! deck {
     () => {
         $crate::Deck::new()
-    }
+    };
 }
 
 mod suit;
-pub use suit::{Suit};
+pub use suit::{Color, Suit};
 
 mod rank;
-pub use rank::{Rank};
+pub use rank::Rank;
+
+mod joker;
+pub use joker::Joker;
 
 mod card;
-pub use card::{Card};
+pub use card::{Card, Cardy};
 
 mod cards;
-pub use cards::{Cards, cards_of_suit, cards_of_rank};
+pub use cards::{cards_of_rank, cards_of_suit, Cards, PlayingCards};
 
 mod deck;
-pub use deck::{Deck};
+pub use deck::Deck;
 
 mod hand;
-pub use hand::{Hand};
+pub use hand::{Area, Hand};
+
+mod handy;
+pub use handy::Handy;
 
 #[cfg(test)]
 mod tests;

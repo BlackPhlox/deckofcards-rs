@@ -67,7 +67,7 @@ pub fn cards_of_suit(cards: &[Card], suit: Suit) -> Vec<Card> {
 }
 
 /// Perform a Knuth shuffle on a deck of cards using the given RNG
-pub fn knuth_shuffle<T: Rng>(cards: &mut [Card], rng: &mut T) {
+pub fn knuth_shuffle<T: Rng, C>(cards: &mut [C], rng: &mut T) {
     let l = cards.len();
     for n in 0..l {
         let i = rng.gen_range(0..l - n);
@@ -75,13 +75,12 @@ pub fn knuth_shuffle<T: Rng>(cards: &mut [Card], rng: &mut T) {
     }
 }
 
-/// Certain actions are common to a deck and a hand of cards
-pub trait Cards {
+pub trait Cards<C> {
     /// Return the cards as a slice
-    fn cards(&self) -> &[Card];
+    fn cards(&self) -> &[C];
 
     /// Return the cards as a mutable slice
-    fn mut_cards(&mut self) -> &mut [Card];
+    fn mut_cards(&mut self) -> &mut [C];
 
     /// Perform a Knuth shuffle with the given RNG
     fn knuth_shuffle<T: Rng>(&mut self, rng: &mut T) {
@@ -97,7 +96,10 @@ pub trait Cards {
     fn seeded_shuffle(&mut self, seed: u64) {
         self.knuth_shuffle(&mut Pcg32::seed_from_u64(seed));
     }
+}
 
+/// Certain actions are common to a deck and a hand of cards
+pub trait PlayingCards: Cards<Card> {
     /// Sort the cards by suit and then by rank (low to high)
     fn sort_suit_ascending_rank(&mut self) {
         sort_suit_ascending_rank(self.mut_cards());

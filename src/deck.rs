@@ -1,6 +1,8 @@
 use std::result::Result;
 use std::vec::Vec;
 
+use self::cards::Cards;
+
 use super::*;
 
 /// The `Deck` represents a deck of zero or more cards. A default deck is 52 playing cards.
@@ -24,7 +26,7 @@ pub struct Deck {
     dealt_cards: Vec<Card>,
 }
 
-impl Cards for Deck {
+impl Cards<Card> for Deck {
     fn cards(&self) -> &[Card] {
         self.cards.as_slice()
     }
@@ -33,6 +35,8 @@ impl Cards for Deck {
         self.cards.as_mut_slice()
     }
 }
+
+impl PlayingCards for Deck {}
 
 impl Deck {
     /// Creates a new `Deck` containing the standard set of 52 cards
